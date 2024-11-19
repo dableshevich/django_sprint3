@@ -23,13 +23,14 @@ def post_detail(request, pk):
     try:
         post = Post.objects.get(pk=pk)
         unpub_posts = Post.objects.filter(
-            Q(pub_date__gt=datetime.now()) | 
-            Q(is_published=False) | 
-            Q(category__is_published=False)
+            Q(pub_date__gt=datetime.now()) | Q(
+                is_published=False
+            ) | Q(
+                category__is_published=False
+            )
         )
         if (post in unpub_posts):
             return HttpResponse("Страница не найдена", status=404)
-
         context = {'post': post}
         return render(request, template, context)
     except Post.DoesNotExist:
@@ -40,7 +41,6 @@ def category_posts(request, category_slug):
     cat = Category.objects.get(slug=category_slug)
     if (cat.is_published is False):
         return HttpResponse("Страница не найдена", status=404)
-
     template = 'blog/category.html'
     posts_list = Post.objects.all().filter(
         pub_date__lte=datetime.now(),
